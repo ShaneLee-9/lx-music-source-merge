@@ -32,6 +32,14 @@
 
 本规则适用于本项目内的所有代理会话。`AGENTS.md` 无法约束项目外的其他代理；如果在项目外继续处理本项目，必须再次明确复述这项限制。
 
+## Git 提交信息规范
+
+- 提交信息遵循 [gitmoji](https://github.com/carloscuesta/gitmoji) 的 emoji 选择规则。
+- 提交标题使用“emoji 中文说明”格式，例如：`✨ 增加音源去重清理命令`。
+- emoji 后直接写中文说明，不添加 `feat`、`fix`、`chore` 等类型前缀或冒号。
+- BUG 修复统一使用 🩹（`:adhesive_bandage:`），例如：`🩹 修复无 JSDoc 文件的处理逻辑`。
+- 提交信息正文（如有）使用中文；仓库配置要求的 co-author trailer 除外。
+
 ## 开发环境和代码规范
 
 - 使用 Bun 1.4.2 运行、测试和执行脚本。
