@@ -24,6 +24,31 @@
 
 ## ▶️ 运行
 
+直接运行时会打开交互式选择器，只展示 `unchecked/` 中 `.js` 后缀的音源文件，可以使用方向键选择并按文件名搜索：
+
 ```bash
 bun run index.ts
 ```
+
+选中文件后会先显示归档预览，确认后才会执行移动或替换。
+
+也可以直接指定文件：
+
+```bash
+bun run index.ts unchecked/example.js
+```
+
+预览模式：
+
+```bash
+bun run index.ts --dry-run
+bun run index.ts unchecked/example.js --dry-run
+```
+
+删除 `unchecked/` 中与 `checked/` 存在相同 `name` 和 `author` 的 `.js` 音源：
+
+```bash
+bun run prune
+```
+
+可通过 `--checked <目录>` 和 `--unchecked <目录>` 指定目录。无匹配、多重匹配或元数据无效的文件会保留。开头没有 JSDoc 的文件会跳过，不参与比对且不报错；有 JSDoc 但元数据字段无效仍会报错。版本号不参与匹配。`index.ts` 直接指定这类无 JSDoc 文件时也会跳过。

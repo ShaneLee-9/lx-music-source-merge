@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "prune": "bun run src/prune-cli.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
