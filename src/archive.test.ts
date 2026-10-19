@@ -38,6 +38,19 @@ describe("source archive", () => {
     await expect(stat(newPath)).rejects.toThrow();
   });
 
+  test("matches sources with explicitly empty authors", async () => {
+    const paths = await fixture();
+    const checkedPath = join(paths.checked, "old.js");
+    const sourcePath = join(paths.unchecked, "new.js");
+    await writeFile(checkedPath, `/**\n * @name Demo\n * @version 1\n * @author \n */`);
+    await writeFile(sourcePath, `/**\n * @name Demo\n * @version 2\n * @author \n */`);
+
+    const plan = await createArchivePlan({ sourcePath, checkedRoot: paths.checked, uncheckedRoot: paths.unchecked });
+    expect(plan.action).toBe("replace");
+    expect(plan.matches).toHaveLength(1);
+    expect(plan.metadata.author).toBe("");
+  });
+
   test("allows replacing even when the incoming version is lower", async () => {
     const paths = await fixture();
     const oldPath = join(paths.checked, "old.ts");

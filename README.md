@@ -51,4 +51,4 @@ bun run index.ts unchecked/example.js --dry-run
 bun run prune
 ```
 
-可通过 `--checked <目录>` 和 `--unchecked <目录>` 指定目录。无匹配、多重匹配或元数据无效的文件会保留。开头没有 JSDoc 的文件会跳过，不参与比对且不报错；有 JSDoc 但元数据字段无效仍会报错。版本号不参与匹配。`index.ts` 直接指定这类无 JSDoc 文件时也会跳过。
+可通过 `--checked <目录>` 和 `--unchecked <目录>` 指定目录。无匹配、多重匹配或元数据无效的文件会保留。开头没有 JSDoc 的文件会跳过，不参与比对且不报错；有 JSDoc 但元数据字段无效仍会报错。版本号不参与匹配。空作者按空字符串参与精确匹配；`@author` 字段仍必须存在。`index.ts` 直接指定无 JSDoc 文件时也会跳过。

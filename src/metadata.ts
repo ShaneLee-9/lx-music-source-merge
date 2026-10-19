@@ -28,9 +28,10 @@ function cleanJSDocLine(line: string): string {
   return line.replace(/^\s*\*?\s?/, "").trim();
 }
 
-function parseFieldValue(value: string): string {
+function parseFieldValue(value: string, allowEmpty: boolean): string {
   const trimmed = value.trim();
   if (trimmed.length === 0) {
+    if (allowEmpty) return "";
     throw new MetadataError("empty-field", "metadata value must not be empty");
   }
 
@@ -41,7 +42,7 @@ function parseFieldValue(value: string): string {
   }
 
   const content = trimmed.slice(1, -1);
-  if (content.length === 0) {
+  if (content.length === 0 && !allowEmpty) {
     throw new MetadataError("empty-field", "metadata value must not be empty");
   }
   return content;
@@ -75,12 +76,12 @@ export function parseMetadataFromHeader(header: string, sourcePath = "source"): 
     }
 
     const remainder = match[2]!.trim().replace(/^[:=]\s*/, "");
-    if (remainder.length === 0) {
+    if (remainder.length === 0 && field !== "author") {
       throw new MetadataError("invalid-field", `${sourcePath}: ${field} field has no value`);
     }
 
     try {
-      values[field] = parseFieldValue(remainder);
+      values[field] = parseFieldValue(remainder, field === "author");
     } catch (error) {
       const message = error instanceof MetadataError ? error.message : "invalid value";
       throw new MetadataError("invalid-field", `${sourcePath}: ${field} ${message}`);

@@ -16,6 +16,15 @@ describe("metadata parser", () => {
     });
   });
 
+  test("accepts an explicitly present but empty author", () => {
+    expect(parseMetadataFromHeader(`/*!\n * @name 安妮独家音源\n * @version v5\n * @author \n */`)).toEqual({
+      name: "安妮独家音源",
+      version: "v5",
+      author: "",
+    });
+    expect(parseMetadataFromHeader(`/**\n * @name Demo\n * @version 1\n * @author \"\"\n */`).author).toBe("");
+  });
+
   test("rejects missing and duplicate fields", () => {
     expect(() => parseMetadataFromHeader("/** @name 'Demo'\n @version '1' */")).toThrow(/missing author/);
     expect(() => parseMetadataFromHeader("/**\n * @name 'A'\n * name 'B'\n * @version '1'\n * @author 'C'\n */")).toThrow(/duplicate name/);
