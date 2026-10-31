@@ -17,7 +17,7 @@ async function fixture() {
 }
 
 describe("unchecked duplicate pruning", () => {
-  test("deletes one matching source regardless of version", async () => {
+  test("replaces checked with a newer unchecked version", async () => {
     const paths = await fixture();
     const checkedPath = join(paths.checked, "nested", "checked.js");
     const uncheckedPath = join(paths.unchecked, "incoming.js");
@@ -26,9 +26,26 @@ describe("unchecked duplicate pruning", () => {
     await writeFile(uncheckedPath, source("Demo", "2", "Author"));
 
     const result = await pruneDuplicateUncheckedFiles({ checkedRoot: paths.checked, uncheckedRoot: paths.unchecked });
-    expect(result.deleted).toEqual([uncheckedPath]);
+    expect(result.updated).toEqual([uncheckedPath]);
+    expect(result.deleted).toEqual([]);
     await expect(stat(uncheckedPath)).rejects.toThrow();
-    expect(await readFile(checkedPath, "utf8")).toContain("@version \"1\"");
+    expect(await readFile(join(paths.checked, "nested", "incoming.js"), "utf8")).toContain("@version \"2\"");
+    await expect(stat(checkedPath)).rejects.toThrow();
+  });
+
+  test("deletes unchecked when its version is equal or lower", async () => {
+    const paths = await fixture();
+    const checkedPath = join(paths.checked, "checked.js");
+    const sameVersion = join(paths.unchecked, "same.js");
+    const lowerVersion = join(paths.unchecked, "lower.js");
+    await writeFile(checkedPath, source("Demo", "2.3.5", "Author"));
+    await writeFile(sameVersion, source("Demo", "2.3.5", "Author"));
+    await writeFile(lowerVersion, source("Demo", "2.3.0", "Author"));
+
+    const result = await pruneDuplicateUncheckedFiles({ checkedRoot: paths.checked, uncheckedRoot: paths.unchecked });
+    expect(result.updated).toEqual([]);
+    expect(result.deleted).toEqual([lowerVersion, sameVersion]);
+    expect(await readFile(checkedPath, "utf8")).toContain("@version \"2.3.5\"");
   });
 
   test("keeps files with different author and invalid metadata", async () => {

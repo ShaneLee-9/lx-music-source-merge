@@ -45,7 +45,7 @@ bun run index.ts --dry-run
 bun run index.ts unchecked/example.js --dry-run
 ```
 
-删除 `unchecked/` 中与 `checked/` 存在相同 `name` 和 `author` 的 `.js` 音源：
+清理 `unchecked/` 中与 `checked/` 存在相同 `name` 和 `author` 的 `.js` 音源：若 unchecked 版本更新，则先替换 checked 文件；版本相同或较低时删除 unchecked 副本。
 
 ```bash
 bun run prune

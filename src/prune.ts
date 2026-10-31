@@ -1,5 +1,5 @@
 import { unlink } from "node:fs/promises";
-import { createArchivePlan } from "./archive.ts";
+import { createArchivePlan, executeArchivePlan } from "./archive.ts";
 import { discoverUncheckedFiles } from "./interactive.ts";
 
 export interface PruneOptions {
@@ -8,6 +8,7 @@ export interface PruneOptions {
 }
 
 export interface PruneResult {
+  updated: string[];
   deleted: string[];
   kept: string[];
   errors: string[];
@@ -15,7 +16,7 @@ export interface PruneResult {
 
 export async function pruneDuplicateUncheckedFiles(options: PruneOptions): Promise<PruneResult> {
   const scan = await discoverUncheckedFiles(options.uncheckedRoot);
-  const result: PruneResult = { deleted: [], kept: [], errors: [...scan.errors] };
+  const result: PruneResult = { updated: [], deleted: [], kept: [], errors: [...scan.errors] };
 
   for (const candidate of scan.candidates) {
     try {
@@ -37,6 +38,12 @@ export async function pruneDuplicateUncheckedFiles(options: PruneOptions): Promi
       }
       if (plan.matches.length === 0 || plan.action !== "replace") {
         result.kept.push(candidate.path);
+        continue;
+      }
+
+      if (plan.matchStatus === "update") {
+        await executeArchivePlan(plan);
+        result.updated.push(candidate.path);
         continue;
       }
 
